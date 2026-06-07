@@ -1,0 +1,583 @@
+/* =========================================================
+   김민수 포트폴리오 — 다크 슬라이드 덱
+   디자인 토큰 / 공통 컴포넌트 / 슬라이드별 레이아웃
+   ========================================================= */
+
+:root {
+  /* 배경 / 표면 */
+  --bg:          #070a0f;
+  --bg-2:        #0b0f15;
+  --surface:     #121922;
+  --surface-2:   #18212d;
+  --surface-3:   #1f2a38;
+
+  /* 라인 */
+  --border:        rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* 강조색 (1페이지 민트) */
+  --mint:      #2dd4a8;
+  --mint-soft: #5ee3c0;
+  --mint-dim:  rgba(45, 212, 168, 0.14);
+  --mint-line: rgba(45, 212, 168, 0.35);
+
+  /* 보조 의미색 (절제 사용) */
+  --red:    #ff7a7a;
+  --blue:   #6aa6ff;
+  --orange: #f6b24b;
+
+  /* 텍스트 */
+  --text:   #eef2f6;
+  --text-2: #a7b2bf;
+  --text-3: #6c7785;
+
+  /* 디자인 기준 해상도 */
+  --stage-w: 1280px;
+  --stage-h: 720px;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
+          "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 600px at 12% -10%, rgba(45, 212, 168, 0.10), transparent 60%),
+    radial-gradient(1000px 700px at 110% 120%, rgba(45, 212, 168, 0.06), transparent 55%),
+    var(--bg);
+  font-family: var(--font);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   스테이지(뷰포트 맞춤 스케일) + 슬라이드
+   ========================================================= */
+
+.viewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 96px; /* 하단 네비게이션 바 공간 확보 (콘텐츠와 겹치지 않게) */
+}
+
+.stage {
+  position: relative;
+  width: var(--stage-w);
+  height: var(--stage-h);
+  transform-origin: center center;
+  /* JS가 scale() 주입 */
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  padding: 54px 64px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.015), transparent 30%),
+    var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  overflow: hidden;
+}
+.slide.active { display: flex; animation: fade .45s ease; }
+
+@keyframes fade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 슬라이드 코너 장식(통일감용 미세 글로우) */
+.slide::after {
+  content: "";
+  position: absolute;
+  right: -120px; top: -120px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(45,212,168,0.10), transparent 70%);
+  pointer-events: none;
+}
+
+/* =========================================================
+   공통 컴포넌트
+   ========================================================= */
+
+/* eyebrow (소제목 라벨) */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.eyebrow::before {
+  content: "";
+  width: 30px; height: 3px;
+  background: var(--mint);
+  border-radius: 2px;
+}
+
+/* 슬라이드 헤더 */
+.s-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 22px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.s-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-top: 12px;
+  line-height: 1.2;
+}
+.s-title .em { color: var(--mint); }
+.s-sub {
+  font-size: 15px;
+  color: var(--text-2);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.s-head__right { text-align: right; flex-shrink: 0; padding-top: 6px; }
+
+/* 배지 / 알약 태그 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--mint-line);
+  background: var(--mint-dim);
+  color: var(--mint-soft);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pill.mint { border-color: var(--mint-line); color: var(--mint-soft); background: var(--mint-dim); }
+
+/* 카드 */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+}
+.card--accent { border-top: 3px solid var(--mint); }
+
+.card-title {
+  font-size: 19px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title .ic { color: var(--mint); display: inline-flex; }
+
+/* 메트릭(큰 숫자) */
+.metric { display: flex; flex-direction: column; gap: 4px; }
+.metric__label { font-size: 12px; font-weight: 700; letter-spacing: .5px; color: var(--text-3); text-transform: uppercase; }
+.metric__sub   { font-size: 12.5px; color: var(--text-2); }
+.metric__value { font-size: 40px; font-weight: 800; line-height: 1; color: var(--mint); }
+.metric__value small { font-size: 18px; font-weight: 700; }
+
+/* 콘텐츠 본문 영역(헤더 아래 남은 공간 채움) */
+.s-body { flex: 1; min-height: 0; }
+
+/* 그리드 유틸 */
+.grid { display: grid; gap: 20px; }
+.g-2 { grid-template-columns: 1fr 1fr; }
+.g-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* 리스트 */
+.bullet { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.bullet li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.bullet li::before {
+  content: "";
+  position: absolute; left: 0; top: 8px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+}
+.label-mini {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  color: var(--mint);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* 이미지 영역(교체 가능 플레이스홀더) */
+.shot {
+  position: relative;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0d1218;
+}
+.shot img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.shot--contain img { object-fit: contain; padding: 10px; }
+.shot__tag {
+  position: absolute;
+  left: 10px; bottom: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  color: var(--text-3);
+  background: rgba(7,10,15,0.7);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+}
+
+/* 하단 노트 바 */
+.foot-note {
+  flex-shrink: 0;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 22px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+.foot-note .fn-text { font-size: 13px; color: var(--text-2); }
+.foot-note .fn-text b { color: var(--text); }
+.foot-note .fn-tag { font-size: 12px; font-weight: 800; color: var(--mint); letter-spacing: .5px; white-space: nowrap; }
+
+/* 업계 화제 강조 바 (하나증권) */
+.buzz-bar {
+  flex-shrink: 0;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 22px;
+  border: 1px solid var(--mint-line);
+  background: var(--mint-dim);
+  border-radius: var(--radius-sm);
+}
+.buzz-bar .buzz-ic { font-size: 22px; flex-shrink: 0; }
+.buzz-bar .buzz-text { font-size: 13.5px; color: var(--text); line-height: 1.5; }
+.buzz-bar .buzz-text b { color: var(--mint-soft); }
+.buzz-bar .buzz-src { display: block; font-size: 12px; color: var(--text-3); margin-top: 3px; text-decoration: none; transition: color .15s ease; }
+.buzz-bar a.buzz-src:hover { color: var(--mint); }
+.buzz-bar .buzz-tag { margin-left: auto; font-size: 12px; font-weight: 800; color: var(--mint); letter-spacing: .5px; white-space: nowrap; }
+
+/* =========================================================
+   1. 커버
+   ========================================================= */
+.cover { justify-content: center; }
+.cover .quote-mark { font-size: 70px; line-height: 0; color: var(--mint); font-family: Georgia, serif; height: 30px; }
+.cover h1 {
+  font-size: 60px;
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -1px;
+  margin: 28px 0 30px;
+}
+.cover h1 .em { color: var(--mint); }
+.cover .tagbar {
+  display: inline-flex;
+  gap: 0;
+  align-items: center;
+  padding: 16px 26px;
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  background: var(--surface);
+  font-size: 17px;
+  color: var(--text-2);
+}
+.cover .tagbar span { padding: 0 16px; position: relative; }
+.cover .tagbar span:not(:last-child)::after {
+  content: ""; position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+  width: 1px; height: 16px; background: var(--border-strong);
+}
+.cover .divider { height: 1px; background: var(--border); margin: 38px 0 26px; }
+.cover .who { display: flex; align-items: center; gap: 60px; }
+.avatar {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+.who .name { font-size: 24px; font-weight: 800; }
+.who .name small { font-size: 15px; color: var(--text-2); font-weight: 600; margin-left: 8px; }
+.who .role { font-size: 14px; color: var(--text-2); margin-top: 2px; }
+.who .contact { display: flex; gap: 50px; margin-left: auto; }
+.who .ct-label { font-size: 12px; color: var(--text-3); letter-spacing: 1px; text-transform: uppercase; }
+.who .ct-value { font-size: 16px; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 8px; }
+.who .ct-value .ic { color: var(--mint); }
+
+/* =========================================================
+   2. About Me
+   ========================================================= */
+.about-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 30px; height: 100%; }
+.timeline { display: flex; flex-direction: column; gap: 4px; position: relative; }
+.tl-item { position: relative; padding-left: 30px; padding-bottom: 18px; }
+.tl-item::before {
+  content: ""; position: absolute; left: 6px; top: 6px; width: 11px; height: 11px;
+  border-radius: 50%; background: var(--bg-2); border: 2px solid var(--mint); z-index: 1;
+}
+.tl-item:not(:last-child)::after {
+  content: ""; position: absolute; left: 11px; top: 14px; bottom: 0; width: 2px; background: var(--border-strong);
+}
+.tl-top { display: flex; align-items: center; gap: 10px; }
+.tl-org { font-size: 17px; font-weight: 800; }
+.tl-when { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--mint); }
+.tl-role { font-size: 13px; color: var(--text-2); margin-top: 3px; }
+.tl-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+.about-right { display: flex; flex-direction: column; gap: 18px; }
+.quote-box {
+  border-left: 3px solid var(--mint);
+  background: var(--surface);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 20px 24px;
+}
+.quote-box .q { font-size: 18px; font-weight: 800; line-height: 1.45; }
+.quote-box .q .em { color: var(--mint); }
+.quote-box p { font-size: 13px; color: var(--text-2); margin-top: 10px; line-height: 1.55; }
+.comp-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.comp { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 18px 16px; }
+.comp .ic { color: var(--mint); margin-bottom: 10px; display: inline-flex; }
+.comp h4 { font-size: 15px; font-weight: 800; }
+.comp p { font-size: 12px; color: var(--text-2); margin-top: 6px; line-height: 1.5; }
+
+.years-badge { text-align: center; }
+.years-badge .n { font-size: 30px; font-weight: 800; color: var(--mint); line-height: 1; }
+.years-badge .t { font-size: 11px; color: var(--text-3); letter-spacing: 1px; text-transform: uppercase; }
+
+/* =========================================================
+   3. Tech Stack (2x2)
+   ========================================================= */
+.tech-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px; height: 100%; }
+.tech-grid .card { display: flex; flex-direction: column; }
+.tech-sub { font-size: 11.5px; font-weight: 800; letter-spacing: .5px; color: var(--text-3); text-transform: uppercase; margin: 16px 0 9px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.kv-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-top: 8px; }
+.kv { display: flex; flex-direction: column; }
+.kv .k { font-size: 14.5px; font-weight: 800; }
+.kv .v { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+.line-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+.line-list li { font-size: 13.5px; color: var(--text-2); display: flex; align-items: center; gap: 9px; }
+.line-list li::before { content: ""; width: 7px; height: 7px; border-radius: 2px; background: var(--mint); flex-shrink: 0; }
+
+/* 3. 재구성: 계층형(상단 AI 2카드 + 하단 구축 전반 띠) */
+.tech3 { display: flex; flex-direction: column; gap: 18px; height: 100%; }
+.tech3-top { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1 1 auto; min-height: 0; }
+.tech3-top .card { padding: 22px 24px; }
+.tech3-top .tech-sub { margin: 14px 0 8px; }
+.tech3-top .bullet li { font-size: 13px; }
+.tech3-band { flex-shrink: 0; padding: 18px 24px; }
+.band-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.band-head .label-mini { margin-bottom: 0; }
+.band-head__t { font-size: 15px; font-weight: 800; color: var(--text); }
+.band-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.band-col { position: relative; padding-left: 16px; }
+.band-col:not(:first-child)::before { content: ""; position: absolute; left: -1px; top: 2px; bottom: 2px; width: 1px; background: var(--border); }
+.band-h { font-size: 13.5px; font-weight: 800; color: var(--mint); margin-bottom: 10px; }
+.band-col .line-list li { font-size: 13px; }
+
+/* =========================================================
+   4·5. 좌 정보 + 우 스크린샷
+   ========================================================= */
+.split { display: grid; grid-template-columns: 1fr 1.15fr; grid-template-rows: minmax(0, 1fr); gap: 26px; min-height: 0; }
+.info-card { display: flex; flex-direction: column; gap: 16px; }
+.info-head { display: flex; flex-direction: column; gap: 4px; }
+.info-org { font-size: 22px; font-weight: 800; }
+.info-cat { font-size: 12px; font-weight: 700; color: var(--mint); letter-spacing: .5px; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.shot-wrap {
+  position: relative; display: flex; flex-direction: column; min-height: 0;
+  gap: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: #0d1218;
+  padding: 14px;
+}
+.shot-wrap .pill { align-self: flex-end; z-index: 2; }
+.shot-wrap .shot { min-height: 0; border: none; border-radius: 10px; background: transparent; }
+.shot-wrap .shot--contain img { padding: 0; }
+
+/* =========================================================
+   7. SKT 메트릭
+   ========================================================= */
+.proj-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.proj-card .proj-no { font-size: 11px; font-weight: 800; color: var(--mint); letter-spacing: 1px; }
+.proj-card h3 { font-size: 19px; font-weight: 800; margin-top: 4px; }
+.proj-card .proj-meta { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+.strategy { background: var(--surface-2); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 14px; }
+.strategy .st-label { font-size: 11px; font-weight: 800; color: var(--mint); }
+.strategy p { font-size: 12px; color: var(--text-2); margin-top: 5px; line-height: 1.5; }
+.metric-row { display: flex; gap: 28px; margin-top: 16px; }
+
+/* =========================================================
+   9. 삼성 TTS (피드백)
+   ========================================================= */
+.tts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; height: 100%; }
+.scope-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+.scope { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.scope .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); }
+.ach { display: flex; gap: 12px; align-items: flex-start; margin-top: 14px; }
+.ach .num { width: 24px; height: 24px; border-radius: 50%; background: var(--mint-dim); color: var(--mint); border: 1px solid var(--mint-line); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+.ach h5 { font-size: 14.5px; font-weight: 800; }
+.ach p { font-size: 12.5px; color: var(--text-2); margin-top: 3px; line-height: 1.5; }
+.mail-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+.mail-head { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.mail-head .from { font-size: 13px; font-weight: 800; }
+.mail-head .sub { font-size: 11px; color: var(--text-3); }
+.mail-head .ok { margin-left: auto; }
+.mail-q { font-size: 15px; font-weight: 700; line-height: 1.6; color: var(--text); font-style: italic; }
+.mail-q .em { color: var(--mint); font-style: normal; }
+.mail-tag { font-size: 12.5px; color: var(--text-2); }
+.mail-tag b { color: var(--mint); }
+
+/* =========================================================
+   11. Leadership (수평 타임라인)
+   ========================================================= */
+.journey { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; }
+.journey .jt { font-size: 16px; font-weight: 800; border-left: 3px solid var(--mint); padding-left: 12px; margin-bottom: 22px; }
+.jline { position: relative; display: flex; justify-content: space-between; align-items: flex-start; }
+.jline::before { content: ""; position: absolute; left: 5%; right: 5%; top: 18px; height: 2px; background: var(--border-strong); }
+.jnode { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 22%; text-align: center; }
+.jnode .jdot { width: 38px; height: 38px; border-radius: 50%; background: var(--surface-3); border: 2px solid var(--mint); display: flex; align-items: center; justify-content: center; color: var(--mint); }
+.jnode.mid .jdot { width: 30px; height: 30px; background: var(--mint-dim); }
+.jnode .jname { font-size: 14px; font-weight: 800; }
+.jnode .jsub { font-size: 11.5px; color: var(--mint); font-weight: 700; }
+
+/* =========================================================
+   12. Before / After
+   ========================================================= */
+.ba-grid { display: grid; grid-template-columns: 1fr 0.5fr 1fr; gap: 18px; align-items: stretch; }
+.ba-card { border-radius: var(--radius); padding: 20px 22px; border: 1px solid var(--border); }
+.ba-before { background: rgba(255,122,122,0.06); border-color: rgba(255,122,122,0.25); }
+.ba-after  { background: rgba(45,212,168,0.06); border-color: var(--mint-line); }
+.ba-card h4 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.ba-row { font-size: 13px; color: var(--text-2); padding: 11px 13px; border-radius: 8px; background: var(--surface); border-left: 3px solid var(--border-strong); margin-bottom: 9px; line-height: 1.4; }
+.ba-after .ba-row { border-left-color: var(--mint); }
+.ba-before .ba-row { border-left-color: var(--red); }
+.ba-mid { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+.ba-mid .arrow { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--surface); display: flex; align-items: center; justify-content: center; color: var(--mint); }
+.ba-mid .tool-pill { font-size: 12px; font-weight: 800; background: var(--surface-3); padding: 7px 13px; border-radius: 999px; }
+.ba-mid .tool-mini { font-size: 11px; color: var(--text-2); background: var(--surface-2); padding: 4px 10px; border-radius: 999px; }
+
+/* =========================================================
+   13. 성장 차트
+   ========================================================= */
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 30px 18px; position: relative; }
+.chart-legend { position: absolute; right: 30px; top: 22px; display: flex; gap: 20px; font-size: 12px; color: var(--text-2); }
+.chart-legend .lg { display: flex; align-items: center; gap: 7px; }
+.chart-legend .sw { width: 14px; height: 10px; border-radius: 2px; background: var(--mint); }
+.chart-legend .sw.dash { height: 0; border-top: 2px dashed var(--orange); width: 18px; }
+.chart { position: relative; height: 268px; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px 10px 0; margin-top: 24px; border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.avg-line { position: absolute; left: 0; right: 0; border-top: 2px dashed var(--orange); }
+.avg-line .avg-tag { position: absolute; right: 0; top: -18px; font-size: 11px; color: var(--orange); font-weight: 700; }
+.bar-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 15%; }
+.bar { width: 60%; background: linear-gradient(180deg, var(--mint-soft), var(--mint)); border-radius: 6px 6px 0 0; position: relative; min-height: 4px; }
+.bar .bv { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: 13px; font-weight: 800; white-space: nowrap; }
+.bar-col .bx { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.bar.dim { background: linear-gradient(180deg, rgba(94,227,192,0.5), rgba(45,212,168,0.45)); }
+
+/* 13. 하단 지표 카드 — 숫자가 테두리에 붙지 않도록 아래 여백 확보 */
+.growth-metrics .card { padding-top: 22px; padding-bottom: 30px; }
+.growth-metrics .metric { gap: 7px; }
+.growth-metrics .metric__value { margin-top: 6px; }
+
+/* =========================================================
+   14. Final
+   ========================================================= */
+.final { justify-content: center; align-items: center; text-align: center; }
+.final .fm-eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-3); }
+.final h1 { font-size: 44px; font-weight: 800; line-height: 1.4; margin: 30px 0 50px; letter-spacing: -0.5px; }
+.final h1 .em { color: var(--mint); }
+.final .fname { font-size: 26px; font-weight: 800; letter-spacing: 6px; margin-top: 20px; }
+.final .frole { font-size: 15px; color: var(--text-2); margin-top: 6px; }
+.final .fcontact { display: flex; gap: 18px; margin-top: 36px; }
+.final .fc { display: flex; align-items: center; gap: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 28px; }
+.final .fc .ic { color: var(--mint); }
+.final .fc .fl { font-size: 11px; color: var(--text-3); letter-spacing: 1px; text-transform: uppercase; text-align: left; }
+.final .fc .fv { font-size: 16px; font-weight: 700; text-align: left; }
+.final .thanks { font-size: 12px; color: var(--text-3); margin-top: 36px; }
+
+/* =========================================================
+   네비게이션 / 컨트롤
+   ========================================================= */
+.nav {
+  position: fixed;
+  bottom: 22px; left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 10px;
+  background: rgba(18, 25, 34, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  z-index: 50;
+}
+.nav button {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: .15s;
+}
+.nav button:hover { background: var(--mint); color: #04110d; border-color: var(--mint); }
+.nav button:disabled { opacity: .3; cursor: default; }
+.nav .counter { font-size: 14px; font-weight: 700; min-width: 64px; text-align: center; letter-spacing: 1px; }
+.nav .counter b { color: var(--mint); }
+
+.progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--mint); z-index: 60; transition: width .35s ease; }
+
+.hint { position: fixed; bottom: 26px; right: 26px; font-size: 12px; color: var(--text-3); z-index: 50; }
+
+@media print {
+  .nav, .hint, .progress { display: none; }
+}
